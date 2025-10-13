@@ -1,4 +1,4 @@
-use spring::{ tracing};
+use spring::tracing;
 use spring_mail::Response;
 use spring_web::{
     axum::Json, axum::http::StatusCode, axum::response::IntoResponse, extractor::Component,
@@ -12,7 +12,7 @@ use spring_utoipa::utoipa;
 use spring_utoipa::utoipa::OpenApi;
 use spring_web::{get, route};
 
- #[derive(OpenApi)]
+#[derive(OpenApi)]
 #[openapi(paths(hello_world,hello, get_all_user, create_user,get_user_by_id), components(schemas(UserResponse, UserInput,UserDto)), tags(
     (name = "example", description = "Example APIs")
 ))]
@@ -70,7 +70,12 @@ async fn get_user_by_id(
 async fn sendemail(
     Component(mail_service): Component<MailService>,
 ) -> Result<Json<Response>, StatusCode> {
-    Ok(Json(mail_service.send_mail("demo1@demo.com".to_string()).await.unwrap()))
+    Ok(Json(
+        mail_service
+            .send_mail("demo1@demo.com".to_string())
+            .await
+            .unwrap(),
+    ))
 }
 
 #[utoipa::path(post, path = "/user",description =  "post user information" , 
@@ -92,4 +97,3 @@ async fn create_user(Json(payload): Json<UserInput>) -> Result<Json<UserResponse
         message: "User data retrieved successfully.".to_string(),
     }))
 }
- 

@@ -27,3 +27,19 @@ docker exec -t -i  local_pgdb psql -h localhost -p 5432 -U demo demo -f /tmp/sch
 ```bash
 docker exec local_pgdb /usr/bin/pg_dump  -h localhost -p 5432 -U demo demo > schema.sql
 ```
+
+# Build the project
+
+```bash
+cargo build --release
+```
+
+
+# TODO
+
+- [] Show how to provide integration test using Mock for services and DAO
+- [] Support authentification and autorisation using openid connect and keycloack
+- [] Improve open api generation to simplify development
+- [] Provide a migration integration for Welds
+- [] Support pagination
+- [] Connect a simple frontend based on JHipster

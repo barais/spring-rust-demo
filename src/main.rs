@@ -1,15 +1,13 @@
 mod config;
-mod welds;
-mod domain;
 mod dao;
+mod domain;
 mod dto;
 mod service;
 mod web;
-use spring::{auto_config, App};
+mod welds;
+use spring::{App, auto_config};
 use spring_mail::MailPlugin;
-use spring_web::{
-    WebConfigurator, WebPlugin,
-};
+use spring_web::{WebConfigurator, WebPlugin};
 
 use crate::web::web::ApiDoc;
 use crate::welds::welds::WeldsPlugin;
@@ -31,6 +29,3 @@ async fn main() {
         .run()
         .await
 }
- 
-
-

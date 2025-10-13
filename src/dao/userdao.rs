@@ -2,7 +2,6 @@ use spring::plugin::service::Service;
 
 use crate::{domain::model::User, welds::welds::WeldsClient};
 
-
 #[derive(Clone, Service)]
 pub struct UserDao {
     #[inject(component)]
@@ -33,13 +32,11 @@ impl UserDao {
         }
     }
 
-
     pub async fn check_schema(&self) {
-    // Get all the things that are different from the Order struct and the order table in the DB
-    let diff = welds::check::schema::<User>(&self.db).await.unwrap();
-    for d in &diff {
-        println!("{}", d);
-    }
-
+        // Get all the things that are different from the Order struct and the order table in the DB
+        let diff = welds::check::schema::<User>(&self.db).await.unwrap();
+        for d in &diff {
+            println!("{}", d);
+        }
     }
 }
