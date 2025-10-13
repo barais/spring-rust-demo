@@ -1,12 +1,7 @@
 use spring::plugin::service::Service;
-use spring_web::extractor::Component;
-use welds::prelude::*;
 
 use crate::{domain::model::User, welds::welds::WeldsClient};
 
-async fn get_db(Component(db): Component<WeldsClient>) -> WeldsClient {
-    db
-}
 
 #[derive(Clone, Service)]
 pub struct UserDao {
