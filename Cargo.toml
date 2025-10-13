@@ -15,12 +15,13 @@ tokio = { version = "1.0", features = ["full"] }
 spring = "0.4"
 spring-web = { version = "0.4", features = ["openapi", "openapi-swagger"] }
 spring-mail = "0.4"
-spring-redis = "0.4"
+# spring-redis = "0.4"
 # spring-sea-orm = { version = "0.4", features = ["postgres", "with-web", "with-web-openapi"] }
 # sea-orm = { version = "1.0", features = ["with-ipnetwork"] }
 serde = "1.0"
 serde_json = "1.0"
 serde_with = "3.14"
+uuid = { version = "1.18.1", features = ["v4", "serde"] }
 strum = { version = "0.27", features = ["derive"] }
 schemars = { version = "0.9", features = ["derive", "chrono04"] }
 anyhow = "1.0"
@@ -37,7 +38,7 @@ rand = "0.9"
 
 
 #tokio =  { version = "1", features = ["full"] }
-welds = { version = "0.4.18", features = ["postgres","check"] }
+welds = { version = "0.4.18", features = ["postgres","check","migrations"] }
 # schemars = "1.0.4"
 #serde = {version ="1.0.228",features = ["derive"] }
 # serde = { workspace = true, }

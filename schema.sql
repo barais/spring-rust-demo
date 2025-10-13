@@ -26,7 +26,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.users (
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     age integer,
     name character varying(255) NOT NULL,
     firstname character varying(255) NOT NULL

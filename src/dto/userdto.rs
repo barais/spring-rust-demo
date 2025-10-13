@@ -2,23 +2,28 @@ use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 use utoipa::ToSchema;
+use validator::Validate;
+
 
 #[derive(Debug, Serialize, JsonSchema, ToSchema)]
 pub struct UserResponse {
-    pub id: u32,
+    pub id: i64,
     pub message: String,
 }
 
-#[derive(Deserialize, Debug, JsonSchema, ToSchema)]
+#[derive(Deserialize, Validate,Debug, JsonSchema, ToSchema)]
 pub struct UserInput {
-    pub name: String,
-    pub age: u8,
-}
-
-#[derive(Deserialize, Serialize, Debug, JsonSchema, ToSchema)]
-pub struct UserDto {
-    pub id: i64,
+    #[validate(length(min = 3,max = 30, message = "Name is too long or too short"))]
     pub name: String,
     pub firstname: String,
     pub age: Option<i32>,
 }
+
+#[derive(Deserialize, Serialize, Debug, JsonSchema, ToSchema,Clone)]
+pub struct UserDto {
+    pub id: Option<i64>,
+    pub name: String,
+    pub firstname: String,
+    pub age: Option<i32>,
+}
+

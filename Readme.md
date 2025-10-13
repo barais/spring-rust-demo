@@ -24,16 +24,28 @@ docker exec -t -i  local_pgdb psql -h localhost -p 5432 -U demo demo -f /tmp/sch
 docker exec local_pgdb /usr/bin/pg_dump  -h localhost -p 5432 -U demo demo > schema.sql
 ```
 
+## Create data
+
+```bash
+curl -v -X POST http://localhost:8080/user   -H 'Content-Type: application/json'   -d '{"name":"titi","firstname":"titi","age":10}'
+```
+
 # Build the project
 
 ```bash
 cargo build --release
 ```
+# Dev mode
+
+```bash
+cargo watch -x run
+```
 
 
 # TODO
 
-- [ ] Support pagination
+- [x] Support pagination
+- [ ] Add [validation to DTO](https://github.com/AutoWDS/autowds-backend/blob/master/src/views/user.rs)
 - [ ] Integrate a simple mapstruct to convert dto to entity and entity to dto [based on this idea](https://leapcell.io/blog/java-mapstruct-implemented-in-rust?ref=dailydev)
 - [ ] Support authentification and autorisation using openid connect and keycloak
 - [ ] Show how to provide integration test using Mock for services and DAO
@@ -41,3 +53,4 @@ cargo build --release
 - [ ] Improve open api generation to simplify development
 - [ ] Connect a simple frontend based on JHipster
 - [ ] Write a blog post to explain the architecture for Spring developers
+

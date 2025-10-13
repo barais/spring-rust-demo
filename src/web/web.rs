@@ -1,13 +1,16 @@
 use spring::tracing;
 use spring_mail::Response;
+use spring_web::extractor::Query;
 use spring_web::{
     axum::Json, axum::http::StatusCode, axum::response::IntoResponse, extractor::Component,
     extractor::Path,
 };
+use validator::Validate;
 
 use crate::dto::userdto::{UserDto, UserInput, UserResponse};
 use crate::service::mailservice::MailService;
 use crate::service::userservice::UserService;
+use crate::web::pagination::Pagination;
 use spring_utoipa::utoipa;
 use spring_utoipa::utoipa::OpenApi;
 use spring_web::{get, route};
@@ -38,15 +41,13 @@ async fn hello(Path(name): Path<String>) -> impl IntoResponse {
     (status = 200, description = "User found", body = UserDto),
     (status = 404, description = "User not found")))]
 #[route("/user/all", method = "GET")]
-async fn get_all_user() -> Result<Json<Vec<UserDto>>, StatusCode> {
-    let mut users: Vec<UserDto> = Vec::new();
-    let userdto = UserDto {
-        id: 123,
-        name: "John".to_string(),
-        firstname: "Doe".to_string(),
-        age: Some(30),
-    };
-    users.push(userdto);
+async fn get_all_user(pagination: Query<Pagination>,
+Component(userservice): Component<UserService>,
+) -> Result<Json<Vec<UserDto>>, StatusCode> {
+    tracing::info!("{}",pagination.0.per_page);
+    tracing::info!("{}",pagination.0.page);
+    let users = userservice.get_alluser(pagination.0).await;
+
 
     Ok(Json(users))
 }
@@ -85,15 +86,33 @@ async fn sendemail(
     request_body = UserInput
     )]
 #[route("/user", method = "POST")]
-async fn create_user(Json(payload): Json<UserInput>) -> Result<Json<UserResponse>, StatusCode> {
+async fn create_user(Component(userservice): Component<UserService>,
+    Json(payload): Json<UserInput>) -> Result<Json<UserResponse>, StatusCode> {
     let s = format!(
         "Received user: {} ({} years old)",
-        payload.name, payload.age
+        payload.name, payload.firstname
     );
-    tracing::info!(s);
+        let t = payload.validate();
+        if t.is_err(){
+            tracing::error!("Validation error: {:?}", t);
+            Err(
+            StatusCode::BAD_REQUEST
+            )
 
+        } else {
+            
+    let user = UserDto {
+        id: None,
+        name: payload.name, 
+        firstname: payload.firstname,
+        age: payload.age,
+    };
+    tracing::info!(s);
+    let u1 = userservice.create_user(user).await;
     Ok(Json(UserResponse {
-        id: 123,
+        id: u1.id.unwrap(),   
+
         message: "User data retrieved successfully.".to_string(),
     }))
+}
 }
