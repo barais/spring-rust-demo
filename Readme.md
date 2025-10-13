@@ -37,10 +37,10 @@ cargo build --release
 
 # TODO
 
-- [] Show how to provide integration test using Mock for services and DAO
-- [] Support authentification and autorisation using openid connect and keycloak
-- [] Improve open api generation to simplify development
-- [] Provide a migration integration for Welds
-- [] Support pagination
-- [] Connect a simple frontend based on JHipster
-- [] Write a blog post to explain the architecture for Spring developers
+- [ ] Show how to provide integration test using Mock for services and DAO
+- [ ] Support authentification and autorisation using openid connect and keycloak
+- [ ] Improve open api generation to simplify development
+- [ ] Provide a migration integration for Welds
+- [ ] Support pagination
+- [ ] Connect a simple frontend based on JHipster
+- [ ] Write a blog post to explain the architecture for Spring developers
