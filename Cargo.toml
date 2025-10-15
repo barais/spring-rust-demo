@@ -4,27 +4,21 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-# Spring provides the core plugin system and useful Procedural Macros
-#spring = "0.4.6"
-# If you are going to write a web application, add spring-web
-#spring-web = "0.4.9"
-# If the application needs to interact with the database, add spring-sqlx
-# spring-sea-orm = { version = "0.4.5", features = ["postgres"] }
 # The spring-rs project uses the tokio asynchronous runtime by default
 tokio = { version = "1.0", features = ["full"] }
 spring = "0.4"
-spring-web = { version = "0.4", features = ["openapi", "openapi-swagger"] }
+spring-web = { version = "0.4", features = [    "openapi-redoc",
+    "openapi-scalar",
+"openapi", "openapi-swagger"] }
+
 spring-mail = "0.4"
-# spring-redis = "0.4"
-# spring-sea-orm = { version = "0.4", features = ["postgres", "with-web", "with-web-openapi"] }
-# sea-orm = { version = "1.0", features = ["with-ipnetwork"] }
 serde = "1.0"
 serde_json = "1.0"
 serde_with = "3.14"
 uuid = { version = "1.18.1", features = ["v4", "serde"] }
-strum = { version = "0.27", features = ["derive"] }
 schemars = { version = "0.9", features = ["derive", "chrono04"] }
 anyhow = "1.0"
+axum = { version="0.8",  features = ["macros"] }
 axum-extra = { version = "0.10", features = ["typed-header"] }
 axum-client-ip = "1.1"
 axum-valid = "0.24.0"
@@ -35,31 +29,16 @@ pem = "3.0"
 lazy_static = "1.4"
 tracing = "0.1"
 rand = "0.9"
-
-
-#tokio =  { version = "1", features = ["full"] }
 welds = { version = "0.4.18", features = ["postgres","check","migrations"] }
-# schemars = "1.0.4"
-#serde = {version ="1.0.228",features = ["derive"] }
-# serde = { workspace = true, }
 sqlx = { version = "0.8.6", features = [ 'runtime-tokio-rustls',  "macros"] }
-#serde_json = "1.0.145"
 
-utoipa = { version = "5.3", features = ["axum_extras"] }
-utoipauto = "0.2"
-utoipa-swagger-ui = { version = "9.0", optional = true, features = ["axum", "vendored"] }
-
-# OpenAPI visualizers
-spring-utoipa = "0.0.1"
-
-
+spring-macros = { version = "0.4" }
 
 
 [features]
 # Defines a feature named `webp` that does not enable any other features.
 default = ["postgres"]
 #,"swagger-ui"]
-
 postgres = []
 mysql = []
 mssql = []

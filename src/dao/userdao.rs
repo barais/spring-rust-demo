@@ -12,6 +12,7 @@ pub struct UserDao {
 impl UserDao {
     pub async fn get_user(&self, id: i64) -> User {
         self.check_schema().await;
+        tracing::info!("Get user by id: {}", id);
         let u = User::find_by_id(&self.db, id).await.unwrap();
 
         if u.is_none() {
@@ -27,12 +28,12 @@ impl UserDao {
     }
 
     pub async fn create_user(&self, user: User) -> i64 {
-        let client: &(dyn TransactStart) = &self.db;
+        let client: &dyn TransactStart = &self.db;
         let transaction = client.begin().await.unwrap();
         tracing::info!("Transaction started {}", user.name);
         //  let t = welds::query::insert::insert_one(&mut user, &self.db).await;
         let mut u1 = DbState::new_uncreated(user);
-        u1.save(&transaction).await;
+        let _ = u1.save(&transaction).await;
         transaction.commit().await.unwrap();
         u1.id
     }

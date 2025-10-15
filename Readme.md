@@ -45,12 +45,12 @@ cargo watch -x run
 # TODO
 
 - [x] Support pagination
-- [ ] Add [validation to DTO](https://github.com/AutoWDS/autowds-backend/blob/master/src/views/user.rs)
-- [ ] Integrate a simple mapstruct to convert dto to entity and entity to dto [based on this idea](https://leapcell.io/blog/java-mapstruct-implemented-in-rust?ref=dailydev)
+- [X] Add [validation to DTO](https://github.com/AutoWDS/autowds-backend/blob/master/src/views/user.rs)
+- [X] Integrate a simple mapstruct to convert dto to entity and entity to dto [based on this idea](https://leapcell.io/blog/java-mapstruct-implemented-in-rust?ref=dailydev)
 - [ ] Support authentification and autorisation using openid connect and keycloak
 - [ ] Show how to provide integration test using Mock for services and DAO
 - [ ] Provide a migration integration for Welds
-- [ ] Improve open api generation to simplify development
+- [x] Improve open api generation to simplify development
 - [ ] Connect a simple frontend based on JHipster
 - [ ] Write a blog post to explain the architecture for Spring developers
 

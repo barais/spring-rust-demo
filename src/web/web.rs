@@ -1,5 +1,4 @@
 use spring::tracing;
-use spring_mail::Response;
 use spring_web::extractor::Query;
 use spring_web::{
     axum::Json, axum::http::StatusCode, axum::response::IntoResponse, extractor::Component,
@@ -7,59 +6,35 @@ use spring_web::{
 };
 use validator::Validate;
 
+use crate::dto::maildto::MailResponse;
 use crate::dto::userdto::{UserDto, UserInput, UserResponse};
 use crate::service::mailservice::MailService;
 use crate::service::userservice::UserService;
 use crate::web::pagination::Pagination;
-use spring_utoipa::utoipa;
-use spring_utoipa::utoipa::OpenApi;
-use spring_web::{get, route};
+// use spring_utoipa::utoipa;
+// use spring_utoipa::utoipa::OpenApi;
+use spring_web::{ get_api, post_api};
 
-#[derive(OpenApi)]
-#[openapi(paths(hello_world,hello, get_all_user, create_user,get_user_by_id), components(schemas(UserResponse, UserInput,UserDto)), tags(
-    (name = "example", description = "Example APIs")
-))]
-pub struct ApiDoc;
 
-// The get macro specifies the Http Method and request path.
-// spring-rs also provides other standard http method macros such as post, delete, patch, etc.
-#[utoipa::path(get, path = "/")]
-#[get("/")]
+#[get_api("/")]
 async fn hello_world() -> impl IntoResponse {
     "hello world"
 }
 
-// You can also use the route macro to specify the Http Method and request path.
-// Path extracts parameters from the HTTP request path
-#[utoipa::path(get, path = "/hello/{name}")]
-#[route("/hello/{name}", method = "GET", method = "POST")]
+#[get_api("/hello/{name}")]
 async fn hello(Path(name): Path<String>) -> impl IntoResponse {
     format!("hello {name}")
 }
 
-#[utoipa::path(get, path = "/user/all",description =  "Get all user information" , responses(
-    (status = 200, description = "User found", body = UserDto),
-    (status = 404, description = "User not found")))]
-#[route("/user/all", method = "GET")]
+#[get_api("/user/all")]
 async fn get_all_user(pagination: Query<Pagination>,
 Component(userservice): Component<UserService>,
 ) -> Result<Json<Vec<UserDto>>, StatusCode> {
-    tracing::info!("{}",pagination.0.per_page);
-    tracing::info!("{}",pagination.0.page);
     let users = userservice.get_alluser(pagination.0).await;
-
-
     Ok(Json(users))
 }
 
-#[utoipa::path(get, path = "/user/{id}",description =  "Get user information" , responses(
-    (status = 200, description = "User found", body = UserDto),
-    (status = 404, description = "User not found")), params(
-        ("id" = u64, Path, description = "user database id to get User for"),
-    )
-
-)]
-#[route("/user/{id}", method = "GET")]
+#[get_api("/user/{id}")]
 async fn get_user_by_id(
     Component(userservice): Component<UserService>,
     Path(id): Path<i64>,
@@ -67,25 +42,22 @@ async fn get_user_by_id(
     Ok(Json(userservice.get_user(id).await))
 }
 
-#[route("/sendemail", method = "GET")]
+#[get_api("/sendemail")]
 async fn sendemail(
     Component(mail_service): Component<MailService>,
-) -> Result<Json<Response>, StatusCode> {
-    Ok(Json(
-        mail_service
-            .send_mail("demo1@demo.com".to_string())
-            .await
-            .unwrap(),
-    ))
+) -> Result<Json<MailResponse>, StatusCode> {
+    let resp = mail_service
+        .send_mail("demo1@demo.com".to_string())
+        .await
+        .unwrap();
+
+    Ok(Json(MailResponse {
+        success: resp.code().to_string() == "200".to_string(),
+        message: resp.message().collect(),
+    }))
 }
 
-#[utoipa::path(post, path = "/user",description =  "post user information" , 
-    responses(
-    (status = 200, description = "User created", body = UserResponse),
-    (status = 404, description = "User not found")),
-    request_body = UserInput
-    )]
-#[route("/user", method = "POST")]
+#[post_api("/user")]
 async fn create_user(Component(userservice): Component<UserService>,
     Json(payload): Json<UserInput>) -> Result<Json<UserResponse>, StatusCode> {
     let s = format!(

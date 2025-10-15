@@ -31,6 +31,7 @@ pub struct WeldsConfig {
 
     /// Set the timeout for acquiring a connection
     pub acquire_timeout: Option<u64>,
+
 }
 
 fn default_min_connections() -> u32 {
@@ -40,3 +41,4 @@ fn default_min_connections() -> u32 {
 fn default_max_connections() -> u32 {
     10
 }
+
