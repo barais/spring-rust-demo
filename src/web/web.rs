@@ -2,18 +2,19 @@ use spring::tracing;
 use spring_web::extractor::Query;
 use spring_web::{
     axum::Json, axum::http::StatusCode, axum::response::IntoResponse, extractor::Component,
-    extractor::Path,
+    extractor::Path,extractor::Config,
 };
 use validator::Validate;
 
 use crate::dto::maildto::MailResponse;
-use crate::dto::userdto::{UserDto, UserInput, UserResponse};
+use crate::dto::userdto::{CustomConfig, UserDto, UserInput, UserResponse};
 use crate::service::mailservice::MailService;
 use crate::service::userservice::UserService;
+use crate::web::jwt::Claims;
 use crate::web::pagination::Pagination;
 // use spring_utoipa::utoipa;
 // use spring_utoipa::utoipa::OpenApi;
-use spring_web::{ get_api, post_api};
+use spring_web::{ get, get_api, post_api};
 
 
 #[get_api("/")]
@@ -55,6 +56,15 @@ async fn sendemail(
         success: resp.code().to_string() == "200".to_string(),
         message: resp.message().collect(),
     }))
+}
+
+#[get("/user-info")]
+async fn protected_user_info(
+    claims: Claims,
+    Config(conf): Config<CustomConfig>,
+) -> impl IntoResponse {
+    let user_id = claims.sub;
+    format!("get user info of id#{}: {}", user_id, conf.user_info_detail)
 }
 
 #[post_api("/user")]

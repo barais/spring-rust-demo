@@ -1,0 +1,47 @@
+services:
+  demodb:
+    image: postgres:latest
+    container_name: local_pgdb
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+    volumes:
+      - local_pgdatademo:/var/lib/postgresql/data
+      - ./../migration/:/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: demopgadmin4_container
+    restart: always
+    ports:
+      - "5088:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: demo@demo.com
+      PGADMIN_DEFAULT_PASSWORD: demo
+    volumes:
+      - pgadmin-datademo:/var/lib/pgadmin
+  maildev:
+    image: maildev/maildev
+    container_name: maildev
+    command: bin/maildev --base-pathname /maildev -w 1080 -s 25
+    ports:
+      - "1080:1080"
+      - "2525:25"
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev --hostname=http://localhost:8082 --import-realm
+    ports:
+      - "8082:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    volumes:
+      - ./../keycloakrealms/:/opt/keycloak/data/import
+
+
+volumes:
+  local_pgdatademo:
+  pgadmin-datademo:

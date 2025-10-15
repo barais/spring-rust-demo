@@ -1,6 +1,7 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
+use spring::config::Configurable;
 // use utoipa::ToSchema;
 use validator::Validate;
 
@@ -27,3 +28,8 @@ pub struct UserDto {
     pub age: Option<i32>,
 }
 
+#[derive(Configurable, JsonSchema, Deserialize)]
+#[config_prefix = "custom"]
+pub struct CustomConfig {
+    pub user_info_detail: String,
+}

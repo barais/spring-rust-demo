@@ -7,9 +7,20 @@ This small project shows a backend architecture in Rust that follows the princip
 ## Start the database
 
 ```bash
-cd postgres-docker/
+cd dev-docker/
 docker compose up -d 
 ```
+
+Le docker 
+
+```bash
+token=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -d 'password=springrs' -d 'grant_type=password' -d 'client_secret=hgbxPDD6WWpC1hrjIy7BG5pZeoMbHmLz' 'http://localhost:8082/realms/myspringrustrealm/protocol/openid-connect/token' |jq .access_token -r`
+
+curl "http://localhost:8080/user-info" -H "Authorization: Bearer $token"
+```
+
+
+
 
 ## Restore database
 
@@ -17,6 +28,7 @@ docker compose up -d
 docker cp ../schema.sql local_pgdb:/tmp/schema.sql
 docker exec -t -i  local_pgdb psql -h localhost -p 5432 -U demo demo -f /tmp/schema.sql
 ```
+
 
 ## Backup database
 
@@ -42,6 +54,8 @@ cargo watch -x run
 ```
 
 
+
+
 # TODO
 
 - [x] Support pagination
@@ -50,7 +64,7 @@ cargo watch -x run
 - [ ] Support authentification and autorisation using openid connect and keycloak
 - [ ] Show how to provide integration test using Mock for services and DAO
 - [ ] Provide a migration integration for Welds
-- [x] Improve open api generation to simplify development
+- [ ] Improve open api generation to simplify development
 - [ ] Connect a simple frontend based on JHipster
 - [ ] Write a blog post to explain the architecture for Spring developers
 
