@@ -14,9 +14,17 @@ docker compose up -d
 Le docker 
 
 ```bash
+# Get public key from keycloak
+curl -s http://localhost:8082/realms/myspringrustrealm/ |jq .public_key -r 
+
+# Authentificate using login and password
 token=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -d 'password=springrs' -d 'grant_type=password' -d 'client_secret=hgbxPDD6WWpC1hrjIy7BG5pZeoMbHmLz' 'http://localhost:8082/realms/myspringrustrealm/protocol/openid-connect/token' |jq .access_token -r`
 
+
+# Test protected access
 curl "http://localhost:8080/user-info" -H "Authorization: Bearer $token"
+
+
 ```
 
 

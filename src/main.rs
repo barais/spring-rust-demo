@@ -5,7 +5,6 @@ mod dto;
 mod service;
 mod web;
 mod welds;
-
 use spring::{App, auto_config};
 use spring_mail::MailPlugin;
 use spring_web::{ WebPlugin, WebConfigurator};
