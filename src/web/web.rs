@@ -4,7 +4,6 @@ use spring_web::{
     axum::Json, axum::http::StatusCode, axum::response::IntoResponse, extractor::Component,
     extractor::Path
 };
-use tower_http::follow_redirect::policy::PolicyExt;
 use validator::Validate;
 
 use crate::dto::maildto::MailResponse;
@@ -108,12 +107,6 @@ async fn create_user(Component(userservice): Component<UserService>,
             
     let user = payload.into();
     
-/*    UserDto {
-        id: None,
-        name: payload.name, 
-        firstname: payload.firstname,
-        age: payload.age,
-    }; */
     tracing::info!(s);
     let u1 = userservice.create_user(user).await;
     Ok(Json(UserResponse {
