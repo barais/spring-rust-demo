@@ -50,5 +50,3 @@ stub = true
 from = "demo@demo.fr"
 
 
-[custom]
-user_info_detail = "hello custom config"

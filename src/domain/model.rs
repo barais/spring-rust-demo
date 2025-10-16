@@ -9,5 +9,7 @@ pub struct User {
     #[welds(rename = "name")]
     pub name: String,
     pub firstname: String,
+    pub sub: String,
+    pub email: String,
     pub age: Option<i32>,
 }

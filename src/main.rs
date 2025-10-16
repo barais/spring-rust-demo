@@ -5,7 +5,7 @@ mod dto;
 mod service;
 mod web;
 mod welds;
-use spring::{App, auto_config};
+use spring::{App};
 use spring_mail::MailPlugin;
 use spring_web::{ WebPlugin, WebConfigurator};
 
@@ -13,12 +13,13 @@ use spring_web::{ WebPlugin, WebConfigurator};
 use crate::welds::welds::{ WeldsPlugin};
 
 // Main function entry
-#[auto_config(WebConfigurator)] // auto config web router
+// #[auto_config(WebConfigurator)] // auto config web router
 #[tokio::main]
 async fn main() {
    App::new()
     .add_plugin(WeldsPlugin)
     .add_plugin(WebPlugin)
     .add_plugin(MailPlugin)
+    .add_router(web::router())
         .run().await;
 }

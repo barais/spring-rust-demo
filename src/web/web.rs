@@ -2,45 +2,35 @@ use spring::tracing;
 use spring_web::extractor::Query;
 use spring_web::{
     axum::Json, axum::http::StatusCode, axum::response::IntoResponse, extractor::Component,
-    extractor::Path,extractor::Config,
+    extractor::Path
 };
+use tower_http::follow_redirect::policy::PolicyExt;
 use validator::Validate;
 
 use crate::dto::maildto::MailResponse;
-use crate::dto::userdto::{CustomConfig, UserDto, UserInput, UserResponse};
+use crate::dto::userdto::{ UserDto, UserInput, UserResponse};
 use crate::service::mailservice::MailService;
 use crate::service::userservice::UserService;
-use crate::web::jwt::Claims;
+use crate::web::jwt::{has_authorities, Claims};
 use crate::web::pagination::Pagination;
-// use spring_utoipa::utoipa;
-// use spring_utoipa::utoipa::OpenApi;
-use spring_web::{  get_api, post_api};
+use spring_web::{ get_api, post_api};
 
-use spring_web::middlewares;
-use spring_web::{
-    axum::{
-        body,
-        middleware::{self, Next},
-        response::{ Response},
-    },
-    extractor::Request,
-};
-use tower_http::timeout::TimeoutLayer;
-        use std::time::Duration;
+    use spring_web::{ error::KnownWebError};
 
-#[middlewares(
-    middleware::from_fn(problem_middleware),
-    TimeoutLayer::new(Duration::from_secs(10))
-)]
-mod web{
-    use spring_web::error::KnownWebError;
 
-    use super::*;
 
-#[get_api("/")]
+
+
+#[get_api("/hello")]
 async fn hello_world() -> impl IntoResponse {
     "hello world"
 }
+
+#[get_api("/test")]
+async fn hello_world1() -> impl IntoResponse {
+    "hello world"
+}
+
 
 #[get_api("/hello/{name}")]
 async fn hello(Path(name): Path<String>) -> impl IntoResponse {
@@ -60,7 +50,13 @@ async fn get_user_by_id(
     Component(userservice): Component<UserService>,
     Path(id): Path<i64>,
 ) -> Result<Json<UserDto>, StatusCode> {
-    Ok(Json(userservice.get_user(id).await))
+    let user = userservice.get_user(id).await;
+
+    if user.is_none(){
+        return Err(StatusCode::NOT_FOUND);
+    } else {
+        Ok(Json(user.unwrap()))
+    }
 }
 
 #[get_api("/sendemail")]
@@ -78,18 +74,20 @@ async fn sendemail(
     }))
 }
 
-    #[get("/error")]
+    #[get_api("/error")]
     async fn error_request() ->     spring_web::error::Result<String> {
         Err(KnownWebError::bad_request("request error"))?
     }
 
-#[get("/user-info")]
+#[get_api("/user-info")]
 async fn protected_user_info(
-    claims: Claims,
-    Config(conf): Config<CustomConfig>,
+    claims: Claims
 ) -> impl IntoResponse {
+    let s = has_authorities(&claims, "USER".to_string());
+    println!("🔐 [AUTH] Checking authentication for: user_info : {}",s);    
+    
     let user_id = claims.sub;
-    format!("get user info of id#{}: {}", user_id, conf.user_info_detail)
+    format!("get user info of id#{}", user_id)
 }
 
 #[post_api("/user")]
@@ -108,12 +106,14 @@ async fn create_user(Component(userservice): Component<UserService>,
 
         } else {
             
-    let user = UserDto {
+    let user = payload.into();
+    
+/*    UserDto {
         id: None,
         name: payload.name, 
         firstname: payload.firstname,
         age: payload.age,
-    };
+    }; */
     tracing::info!(s);
     let u1 = userservice.create_user(user).await;
     Ok(Json(UserResponse {
@@ -124,30 +124,3 @@ async fn create_user(Component(userservice): Component<UserService>,
 }
 }
 
-/// ProblemDetail: https://www.rfc-editor.org/rfc/rfc7807
-async fn problem_middleware(
-    request: Request,
-    next: Next,
-) -> Response {
-    let uri = request.uri().path().to_string();
-    let response = next.run(request).await;
-    let status = response.status();
-    if status.is_client_error() || status.is_server_error() {
-        let bytes = body::to_bytes(response.into_body(), usize::MAX)
-            .await
-            .expect("server body read failed");
-        let msg = String::from_utf8(bytes.to_vec()).expect("read body to string failed");
-
-        // error log into db
-        tracing::error!("{} {} {}", status.as_u16(), uri, msg);
-        problemdetails::new(status)
-            .with_instance(uri)
-            .with_title(status.canonical_reason().unwrap_or("error"))
-            .with_detail(msg)
-            .into_response()
-    } else {
-        response
-    }
-}
-
-}

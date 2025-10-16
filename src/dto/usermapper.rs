@@ -7,6 +7,8 @@ impl From<User> for UserDto {
             name: item.name,
             firstname: item.firstname,
             age: item.age,
+            email: item.email,
+            sub: item.sub
         }
     }
 }
@@ -18,6 +20,8 @@ impl From<UserDto> for User {
             name: item.name,
             firstname: item.firstname,
             age: item.age,
+            email: item.email,
+            sub: item.sub
         }
     }
 }
@@ -28,6 +32,20 @@ impl From<UserInput> for User {
             name: item.name,
             firstname: item.firstname,
             age: item.age,
+            email: item.email,
+            sub: item.sub
+        }
+    }
+}
+impl From<UserInput> for UserDto {
+    fn from(item: UserInput) -> UserDto {
+        UserDto {
+            id:None,
+            name: item.name,
+            firstname: item.firstname,
+            age: item.age,
+            email: item.email,
+            sub: item.sub
         }
     }
 }

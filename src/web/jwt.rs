@@ -136,3 +136,10 @@ pub fn decode(token: &str) -> Result<Claims> {
         })?;
     Ok(token_data.claims)
 }
+
+pub fn has_authorities(c:&Claims, authority: String)-> bool{
+    let c1 = c.clone().realm_access.and_then(|f|f.roles.and_then(|roles|Some(roles.contains(&authority))));
+    let c2 = c1.is_some() && c1.unwrap();
+    c2
+ 
+}

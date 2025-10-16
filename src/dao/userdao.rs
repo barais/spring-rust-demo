@@ -10,20 +10,15 @@ pub struct UserDao {
 }
 
 impl UserDao {
-    pub async fn get_user(&self, id: i64) -> User {
+    pub async fn get_user(&self, id: i64) -> Option<User> {
         self.check_schema().await;
         tracing::info!("Get user by id: {}", id);
         let u = User::find_by_id(&self.db, id).await.unwrap();
 
         if u.is_none() {
-            return User {
-                id: 0,
-                name: "".to_string(),
-                firstname: "".to_string(),
-                age: None,
-            };
+            return None;
         } else {
-            return u.unwrap().into_inner();
+            return Some(u.unwrap().into_inner());
         }
     }
 

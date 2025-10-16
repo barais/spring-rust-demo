@@ -10,10 +10,10 @@ pub struct UserService {
 }
 
 impl UserService {
-    pub async fn get_user(&self, id: i64) -> UserDto {
+    pub async fn get_user(&self, id: i64) -> Option<UserDto> {
         tracing::debug!("Get user by id: {}", id);
         let u = self.user_dao.get_user(id).await;
-        let dto = u.into();
+        let dto = u.and_then(|f|Some(f.into()));
         dto
     }
     pub async fn get_alluser(&self, pagination: Pagination) -> Vec<UserDto> {

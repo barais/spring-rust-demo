@@ -18,11 +18,22 @@ Le docker
 curl -s http://localhost:8082/realms/myspringrustrealm/ |jq .public_key -r 
 
 # Authentificate using login and password
+token=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -d 'password=springrs' -d 'grant_type=password' 'http://localhost:8082/realms/myspringrustrealm/protocol/openid-connect/token' |jq .access_token -r`
+
+refreshtoken=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -d 'password=springrs' -d 'grant_type=password' 'http://localhost:8082/realms/myspringrustrealm/protocol/openid-connect/token' |jq .refresh_token -r`
+
+
+curl -s -d 'client_id=myspringrustclient' -d "refresh_token=${refreshtoken}" -d 'grant_type=refresh_token'  'http://localhost:8082/realms/myspringrustrealm/protocol/openid-connect/token' |jq
+
+
+# if you provide configure client authentification, you must add the client_secret parameter
 token=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -d 'password=springrs' -d 'grant_type=password' -d 'client_secret=hgbxPDD6WWpC1hrjIy7BG5pZeoMbHmLz' 'http://localhost:8082/realms/myspringrustrealm/protocol/openid-connect/token' |jq .access_token -r`
+
+refreshtoken=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -d 'password=springrs' -d 'grant_type=password' -d 'client_secret=hgbxPDD6WWpC1hrjIy7BG5pZeoMbHmLz' 'http://localhost:8082/realms/myspringrustrealm/protocol/openid-connect/token' |jq .refresh_token -r`
 
 
 # Test protected access
-curl "http://localhost:8080/user-info" -H "Authorization: Bearer $token"
+curl "http://localhost:8080/api/user-info" -H "Authorization: Bearer $token"
 
 
 ```
