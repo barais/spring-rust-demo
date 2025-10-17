@@ -89,9 +89,7 @@ token=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -d 'pass
 refreshtoken=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -d 'password=springrs' -d 'grant_type=password' -d 'client_secret=hgbxPDD6WWpC1hrjIy7BG5pZeoMbHmLz' 'http://localhost:8082/realms/myspringrustrealm/protocol/openid-connect/token' |jq .refresh_token -r`
 ```
 
-
-## Other features
-
+## Other features
 
 ### Backup database
 
