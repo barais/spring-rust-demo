@@ -29,8 +29,8 @@ CREATE TABLE public.users (
     id bigserial NOT NULL,
     age integer,
     name character varying(255) NOT NULL,
-    firstname character varying(255) NOT NULL
-    sub character varying(255) NOT NULL
+    firstname character varying(255) NOT NULL,
+    sub character varying(255) NOT NULL,
     email character varying(255) NOT NULL
 );
 
@@ -40,11 +40,6 @@ ALTER TABLE public.users OWNER TO demo;
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: vax
 --
-
-COPY public.users (id, age, name, firstname) FROM stdin;
-1	25	BARAIS	OLIVIER f7f00459-9c62-4184-9a02-9440934bcba0 barais@irisa.fr
-2	23	Test	Test1 f7f00459-9c62-4184-9a02-9440934bcba1 test@test.fr
-\.
 
 
 --
@@ -58,4 +53,10 @@ ALTER TABLE ONLY public.users
 --
 -- PostgreSQL database dump complete
 --
+
+
+INSERT INTO public.users (age, name, firstname, sub, email) 
+VALUES (25, 'BARAIS', 'OLIVIER', 'f7f004599c6241849a029440934bcba0','barais@irisa.fr');
+INSERT INTO public.users (age, name, firstname, sub, email) 
+VALUES (23, 'Test', 'Test1','f7f004599c6241849a029440934bcba1','test@test.fr');
 

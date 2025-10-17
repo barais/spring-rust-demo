@@ -80,13 +80,18 @@ async fn sendemail(
 
 #[get_api("/user-info")]
 async fn protected_user_info(
+    Component(userservice): Component<UserService>,
     claims: Claims
 ) -> impl IntoResponse {
     let s = has_authorities(&claims, "USER".to_string());
     println!("🔐 [AUTH] Checking authentication for: user_info : {}",s);    
-    
-    let user_id = claims.sub;
-    format!("get user info of id#{}", user_id)
+    let user = userservice.get_user_by_sub(claims).await;
+    format!("get user info of sub#{}", user.sub);
+    let id =match user.id {
+        Some(id1) =>{ return id1.to_string() },
+        None=>{return "No Id".to_string();},
+    };
+    format!("get user info of id#{}", id);
 }
 
 #[post_api("/user")]

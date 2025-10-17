@@ -1,7 +1,11 @@
 use spring::plugin::service::Service;
 use welds::{TransactStart, state::DbState};
 
-use crate::{domain::model::User, web::pagination::Pagination, welds::welds::WeldsClient};
+use crate::{
+    domain::model::User,
+    web::{jwt::Claims, pagination::Pagination},
+    welds::welds::WeldsClient,
+};
 
 #[derive(Clone, Service)]
 pub struct UserDao {
@@ -19,6 +23,68 @@ impl UserDao {
             return None;
         } else {
             return Some(u.unwrap().into_inner());
+        }
+    }
+
+    pub async fn get_or_create_user_by_sub(&self, claims: Claims) -> Option<User> {
+        self.check_schema().await;
+        tracing::info!("Get user by sub: {}", claims.sub);
+
+        let users = User::where_col(|user| user.sub.equal(&claims.sub))
+            .run(&self.db)
+            .await;
+
+        // let res = users.is_ok_and(|users1|users1.first().is_some());
+        if users.is_ok() {
+            let mut userres = users.unwrap();
+            if userres.first().is_none() {
+                let user = User {
+                    id: 0,
+                    name: match claims.preferred_username {
+                        Some(name) => name,
+                        None => "".to_string(),
+                    },
+                    firstname: match claims.given_name {
+                        Some(name) => name,
+                        None => "".to_string(),
+                    },
+                    sub: claims.sub,
+                    email: match claims.email {
+                        Some(name) => name,
+                        None => "".to_string(),
+                    },
+                    age: None,
+                };
+                let id1 = self.create_user(user).await;
+                println!("{}",id1);
+                return self.get_user(id1).await;
+            } else {
+                let ressome = userres.pop().and_then(|f| Some(f.into_inner()));
+                println!("pass par la");
+
+                return ressome;
+            }
+        } else {
+            println!("pass par la");
+            let user = User {
+                id: 0,
+                name: match claims.preferred_username {
+                    Some(name) => name,
+                    None => "".to_string(),
+                },
+                firstname: match claims.given_name {
+                    Some(name) => name,
+                    None => "".to_string(),
+                },
+                sub: claims.sub,
+                email: match claims.email {
+                    Some(name) => name,
+                    None => "".to_string(),
+                },
+                age: None,
+            };
+            let id1 = self.create_user(user).await;
+            return self.get_user(id1).await;
         }
     }
 

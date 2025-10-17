@@ -1,6 +1,6 @@
 use spring::plugin::service::Service;
 // use spring_web::extractor::{Component};
-use crate::{dao::userdao::UserDao, dto::userdto::UserDto, web::pagination::Pagination};
+use crate::{dao::userdao::UserDao, dto::userdto::UserDto, web::{jwt::Claims, pagination::Pagination}};
 use spring::tracing;
 
 #[derive(Clone, Service)]
@@ -16,6 +16,14 @@ impl UserService {
         let dto = u.and_then(|f|Some(f.into()));
         dto
     }
+    pub async fn get_user_by_sub(&self, claims: Claims) -> UserDto {
+        tracing::debug!("Get user by sub: {}", claims.sub);
+        let u = self.user_dao.get_or_create_user_by_sub(claims).await;
+        let dto = u.unwrap().into(); // u.and_then(|f|f.into());
+        dto
+    }
+
+
     pub async fn get_alluser(&self, pagination: Pagination) -> Vec<UserDto> {
         let users = self.user_dao.get_alluser(pagination).await;
         let mut usersdto = Vec::new();
