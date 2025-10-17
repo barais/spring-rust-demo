@@ -4,6 +4,13 @@ This small project shows a backend architecture in Rust that follows the princip
  
 # Project setup
 
+## 0. Clone the project
+
+```bash
+git clone https://github.com/barais/spring-rust-demo/
+cd spring-rust-demo
+```
+
 ## 1. Start the environement setup
  It will start and setup:
 
@@ -16,7 +23,7 @@ cd dev-docker/
 docker compose up -d 
 ```
 
-## 2. Get the public keys for your identity provider
+## 2. Get the public keys for your identity provider
 
 The identity provider will start with 2 users setup:
 - *springrs:springrs* with the role **USER**
@@ -27,7 +34,15 @@ The identity provider will start with 2 users setup:
 ( echo "-----BEGIN PUBLIC KEY-----" ; curl -s http://localhost:8082/realms/myspringrustrealm/ | jq -r .public_key | fold -w64 ; echo "-----END PUBLIC KEY-----" ) > ../keys/public.key
 ```
 
-## 3. Test two simple routes
+## 3. Run the program in dev mode
+
+```bash
+cargo watch -x run
+```
+
+
+
+## 4. Test two simple routes
 
 Route 1. 
 ```bash
@@ -39,7 +54,7 @@ Route 2.
 curl "http://localhost:8080/api/user/all"
 ```
 
-## 4. Authenticate using login and password and test a route
+## 5. Authenticate using login and password and test a route
 
 Authenticate using login and password 
 
@@ -75,40 +90,35 @@ refreshtoken=`curl -s -d 'client_id=myspringrustclient' -d 'username=springrs' -
 ```
 
 
+## Other features
 
 
-## Restore database
+### Backup database
+
+```bash
+docker exec local_pgdb /usr/bin/pg_dump  -h localhost -p 5432 -U demo demo > schema.sql
+```
+
+### Restore database
 
 ```bash
 docker cp ../schema.sql local_pgdb:/tmp/schema.sql
 docker exec -t -i  local_pgdb psql -h localhost -p 5432 -U demo demo -f /tmp/schema.sql
 ```
 
-
-## Backup database
-
-```bash
-docker exec local_pgdb /usr/bin/pg_dump  -h localhost -p 5432 -U demo demo > schema.sql
-```
-
-## Create data
+### Create data
 
 ```bash
 curl -v -X POST http://localhost:8080/user   -H 'Content-Type: application/json'   -d '{"name":"titi","firstname":"titi","age":10}'
 ```
 
-# Build the project
+### Build the project
 
 ```bash
 cargo build --release
 ```
-# Dev mode
 
-```bash
-cargo watch -x run
-```
-
-# Backup keycloak realm with users
+### Backup keycloak realm with users
 
 ```bash
 docker commit keycloak barais/springrskeycloak
